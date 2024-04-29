@@ -5,7 +5,12 @@ const fs = require('fs');
 const readlineSync = require('readline-sync');
 
 const client = new Client({
-  authStrategy : new LocalAuth()
+  authStrategy : new LocalAuth(),
+  webVersionCache: {
+    type: "remote",
+    remotePath:
+      "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
+  },
 });
 
 const sleep = (ms) => {
@@ -53,15 +58,6 @@ const whatsAppBlast = async () => {
   if(numberIndex < 0) 
       whatsAppBlastReload()
 
-  let delay = readlineSync.question(chalk.yellow('Delay in miliseconds') + ': ')
-
-  let sleepOptionArray = ['No, run program without sleep', 'Yes, run program with sleep']
-  let sleepOption = readlineSync.keyInSelect(sleepOptionArray, chalk.yellow('Use sleep after some messages'))
-  let sleepAfter = (sleepOption == 1) ? readlineSync.question(chalk.yellow('Sleep after every message count') + ': ') : 0
-  let sleepAfterDelay = (sleepOption == 1) ? readlineSync.question(chalk.yellow('Sleep after every message count delay in miliseconds') + ': ') : 0
-  if(sleepOption < 0) 
-      whatsAppBlastReload()
-
   console.log(chalk.yellow('\n\nProcessing...\n'))
   let pathText = './textlist/' + textListArray[textIndex] + '.txt'
   let pathNumber = './numberlist/' + numberListArray[numberIndex] + '.txt'
@@ -89,18 +85,6 @@ const whatsAppBlast = async () => {
           reportContent.push(`${parseInt(numberFormat)} : success`)
       else 
           reportContent.push(`${parseInt(numberFormat)} : failed`)
-
-      await sleep(delay);
-
-      //check if sleep is enabled
-      if(sleepAfter !== 0){
-          messageCount++
-          if(messageCount == sleepAfter){
-              console.log(chalk.yellow('sleep after ' + sleepAfter + ' messages'));
-              await sleep(sleepAfterDelay)
-              messageCount = 0
-          }
-      }
 
       if (i == dataNumberInArray.length - 1) {
           //create report  
